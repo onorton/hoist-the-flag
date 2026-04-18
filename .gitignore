@@ -100,3 +100,11 @@ InitTestScene*.unity*
 
 # Autosave
 *~
+
+# Ableton Analysis Files
+*.asd
+*.asd.*
+
+# Krita files
+*.kra
+*.kra.*

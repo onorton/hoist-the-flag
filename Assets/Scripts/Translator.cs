@@ -11,6 +11,10 @@ public class Translator : MonoBehaviour
 
     private TextMeshProUGUI _textToTranslateUi;
     private TextMeshProUGUI _currentTranslationTextUi;
+
+    [SerializeField]
+    private Button _undoButton;
+
     private Transform _flagPole;
 
     [SerializeField]
@@ -33,6 +37,20 @@ public class Translator : MonoBehaviour
     [SerializeField]
     private GameObject _translationPrefab;
 
+    [SerializeField]
+    private AudioManager _audioManager;
+
+    [SerializeField]
+    private AudioClip _victoryAudioClip;
+    [SerializeField]
+    private AudioClip _gameOverAudioClip;
+    [SerializeField]
+    private AudioClip _correctAudioClip;
+    [SerializeField]
+    private AudioClip _errorAudioClip;
+    [SerializeField]
+    private AudioClip _flagSelectedAudioClip;
+
     private List<string> _phrasesToTranslate = new()
     {
         "Retreat now",
@@ -45,6 +63,8 @@ public class Translator : MonoBehaviour
     private int _currentPhraseToTranslateIndex;
 
     private bool _currentlySpelling = false;
+
+
 
 
     private Dictionary<string, List<Translation>> _translations = new()
@@ -65,9 +85,9 @@ public class Translator : MonoBehaviour
     {
         PopulateTranslations(true);
         _textToTranslateUi = transform.Find("Text to Translate").GetComponent<TextMeshProUGUI>();
-        _currentTranslationTextUi = transform.Find("Current Translation").GetComponent<TextMeshProUGUI>();
+        _currentTranslationTextUi = transform.Find("Current Translation/Current Translation").GetComponent<TextMeshProUGUI>();
         _currentTranslationTextUi.text = "";
-        _timerText = transform.Find("Timer").GetComponent<TextMeshProUGUI>();
+        _timerText = transform.Find("Corner/Timer").GetComponent<TextMeshProUGUI>();
         _words = new List<Word>();
         _flagPole = transform.Find("Flag Pole");
 
@@ -80,10 +100,6 @@ public class Translator : MonoBehaviour
         _currentPhraseToTranslateIndex = 0;
         LoadText();
     }
-
-
-
-
 
     private void Translate()
     {
@@ -176,9 +192,11 @@ public class Translator : MonoBehaviour
 
         if (successfulTranslation)
         {
+            _audioManager.Play(_correctAudioClip);
             _currentPhraseToTranslateIndex += 1;
             if (_currentPhraseToTranslateIndex == _phrasesToTranslate.Count())
             {
+                _audioManager.Play(_victoryAudioClip);
                 Debug.Log("You have translated all phrases, congrats");
             }
             else
@@ -188,6 +206,7 @@ public class Translator : MonoBehaviour
         }
         else
         {
+            _audioManager.Play(_errorAudioClip);
             _currentTranslationTextUi.color = Color.red;
         }
 
@@ -196,6 +215,7 @@ public class Translator : MonoBehaviour
     private void FinishWord()
     {
         Debug.Log("Finished word");
+
 
         if (_currentWord != null)
         {
@@ -264,6 +284,7 @@ public class Translator : MonoBehaviour
     private void AddFlag(FlagData flagData)
     {
         _currentTranslationTextUi.color = Color.white;
+        _audioManager.Play(_flagSelectedAudioClip);
 
         if (_currentWord == null)
         {
@@ -313,6 +334,82 @@ public class Translator : MonoBehaviour
 
     }
 
+    public void UndoLastWord()
+    {
+        Debug.Log("Undo Last Word");
+        if (_currentWord != null)
+        {
+            _currentWord = null;
+            _wordLength = 0;
+        }
+        else if (_words.Count > 0)
+        {
+            if (_currentlySpelling)
+            {
+                var spellingWord = _words.Last();
+                spellingWord.Value = spellingWord.Value[..(spellingWord.Value.Count() - 1)];
+
+                if (spellingWord.Value == "")
+                {
+                    _currentlySpelling = false;
+                    _words.Remove(spellingWord);
+                }
+            }
+            else
+            {
+                _words.RemoveAt(_words.Count - 1);
+            }
+        }
+
+        _currentTranslationTextUi.text = "";
+
+        for (var i = 0; i < _words.Count; i++)
+        {
+            var word = _words[i];
+            if (word.Spelt || word.Numeric)
+            {
+                _currentTranslationTextUi.text += $"{word.Value} ";
+            }
+            else
+            {
+
+                // Translate
+                var targetWords = _textToTranslateUi.text.Split(" ");
+
+                if (_translations.TryGetValue(_currentWord.Value, out var translation))
+                {
+                    if (_words.Count < targetWords.Count())
+                    {
+                        var match = translation.FirstOrDefault(t => t.Value.ToLower() == targetWords[_words.Count - 1].ToLower());
+                        if (match == null)
+                        {
+                            _currentTranslationTextUi.text += $"{translation.FirstOrDefault(t => t.Known)?.Value ?? _currentWord.Value} ";
+                        }
+                        else
+                        {
+                            _currentTranslationTextUi.text += $"{match.Value} ";
+                        }
+                    }
+                    else
+                    {
+                        _currentTranslationTextUi.text += $"{translation.FirstOrDefault(t => t.Known)?.Value ?? _currentWord.Value} ";
+                    }
+                }
+                else
+                {
+                    _currentTranslationTextUi.text += $"{_currentWord.Value} ";
+                }
+            }
+        }
+
+        while (_flagPole.childCount != 0)
+        {
+            DestroyImmediate(_flagPole.GetChild(0).gameObject);
+        }
+
+    }
+
+
     private void Update()
     {
         // Limit max word length
@@ -325,14 +422,22 @@ public class Translator : MonoBehaviour
                 button.interactable = _wordLength < _maxWordLength;
             }
         }
+        _undoButton.interactable = !(_currentWord == null && _words.Count == 0);
+
+        if (_timeLeft == 0.0f)
+        {
+            return;
+        }
 
         _timeLeft = Math.Max(0.0f, _timeLeft - Time.deltaTime);
         TimeSpan time = TimeSpan.FromSeconds(_timeLeft);
         _timerText.text = time.ToString(@"mm\:ss");
         if (_timeLeft == 0.0f)
         {
-            Debug.Log("Run out of time");
+            Debug.Log("Ran out of time");
+            _audioManager.Play(_gameOverAudioClip);
         }
+
     }
 
     private void LoadText()
