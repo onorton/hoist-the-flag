@@ -72,6 +72,8 @@ public class Translator : MonoBehaviour
 
     private bool _pauseTimer;
 
+    private Animator _hourglassAnimator;
+
 
 
 
@@ -86,6 +88,8 @@ public class Translator : MonoBehaviour
         PopulateTranslations(true);
         _textToTranslateUi = transform.Find("Text to Translate").GetComponent<TextMeshProUGUI>();
         _currentTranslationTextUi = transform.Find("Current Translation/Current Translation").GetComponent<TextMeshProUGUI>();
+        _hourglassAnimator = transform.Find("Corner/Timer/Hourglass").GetComponent<Animator>();
+
         _currentTranslationTextUi.text = "";
         _timerText = transform.Find("Corner/Timer").GetComponent<TextMeshProUGUI>();
         _words = new List<Word>();
@@ -490,8 +494,11 @@ public class Translator : MonoBehaviour
 
         if (_timeLeft == 0.0f || _pauseTimer)
         {
+            _hourglassAnimator.speed = 0.0f;
+
             return;
         }
+        _hourglassAnimator.speed = (12.0f / 60.0f) / _levels[_levelIndex].TimerValue;
 
 
         _timeLeft = Math.Max(0.0f, _timeLeft - Time.deltaTime);
@@ -509,6 +516,14 @@ public class Translator : MonoBehaviour
     {
         TimeSpan time = TimeSpan.FromSeconds(_timeLeft);
         _timerText.text = time.ToString(@"mm\:ss");
+        if (_timeLeft <= 20.0f)
+        {
+            _timerText.color = Color.red;
+        }
+        else
+        {
+            _timerText.color = Color.white;
+        }
 
     }
 
@@ -582,8 +597,11 @@ public class Translator : MonoBehaviour
 
     public void LoadCurrentLevel()
     {
+        _hourglassAnimator.Rebind();
+        _hourglassAnimator.Update(0f);
         ResetFlagsOnPole();
         _timeLeft = _levels[_levelIndex].TimerValue;
+        _hourglassAnimator.speed = 0.0f;
         _currentPhraseToTranslateIndex = 0;
         _textToTranslateUi.text = "";
         _currentTranslationTextUi.text = "";
@@ -607,6 +625,7 @@ public class Translator : MonoBehaviour
 
     public void StartLevel()
     {
+        _hourglassAnimator.Play("Animation");
         _pauseTimer = false;
         LoadText();
     }
