@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class Translator : MonoBehaviour
@@ -56,6 +57,8 @@ public class Translator : MonoBehaviour
     private GameObject _gameOverScreen;
     [SerializeField]
     private GameObject _victoryScreen;
+    [SerializeField]
+    private GameObject _pauseMenu;
 
     [SerializeField]
     private List<LevelData> _levels;
@@ -440,6 +443,21 @@ public class Translator : MonoBehaviour
 
     private void Update()
     {
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            if (_pauseMenu.activeSelf)
+            {
+                _pauseTimer = false;
+                _pauseMenu.SetActive(false);
+
+            }
+            else
+            {
+                _pauseTimer = true;
+                _pauseMenu.SetActive(true);
+            }
+        }
+
         // Limit max word length
         var flags = GetComponentInChildren<FlagsGrid>().GetFlags();
         foreach (var flag in flags)
@@ -591,6 +609,11 @@ public class Translator : MonoBehaviour
     {
         _pauseTimer = false;
         LoadText();
+    }
+
+    public void Resume()
+    {
+        _pauseTimer = false;
     }
 
     private void ResetFlagsOnPole()
