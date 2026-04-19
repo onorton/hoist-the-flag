@@ -86,7 +86,7 @@ public class Translator : MonoBehaviour
     private void Start()
     {
         PopulateTranslations(true);
-        _textToTranslateUi = transform.Find("Text to Translate").GetComponent<TextMeshProUGUI>();
+        _textToTranslateUi = transform.Find("Text to Translate/Text to Translate").GetComponent<TextMeshProUGUI>();
         _currentTranslationTextUi = transform.Find("Current Translation/Current Translation").GetComponent<TextMeshProUGUI>();
         _hourglassAnimator = transform.Find("Corner/Timer/Hourglass").GetComponent<Animator>();
 
