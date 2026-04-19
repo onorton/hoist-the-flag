@@ -17,5 +17,6 @@ MonoBehaviour:
   - 10 Enemy Ships East
   - Ally 10 Miles North
   - 101 Enemy Ships 21 Miles West
+  - Enemy 6 Miles 60 Degrees
   TimerValue: 180
   TutorialPrefab: {fileID: 8600201876044129071, guid: 2814c69d2d5aa8e4ea73b80ef4c00ae8, type: 3}

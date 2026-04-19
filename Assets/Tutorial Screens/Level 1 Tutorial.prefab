@@ -67,8 +67,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: You are a signalman on a ship and you need to send messages. To do so,
     you need to select the appropriate flags. You can see which flag combinations
-    correspond to which words in the codebok on the right. Use the "Word End" flag
-    to move to the next word and the "Finished" flag to complete a message.
+    correspond to which words in the codebok on the right. Use the "Code End" flag
+    to move to the next code and the "Finished" flag to complete a message.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

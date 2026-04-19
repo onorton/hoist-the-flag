@@ -10165,13 +10165,22 @@ MonoBehaviour:
   - Code: 78
     Known: 0
     Value: Flee
+  - Code: 79
+    Known: 1
+    Value: Attack
+  - Code: 79
+    Known: 0
+    Value: Hit
+  - Code: 79
+    Known: 0
+    Value: Engage
   - Code: 74
     Known: 1
     Value: Go
   - Code: 144
     Known: 1
     Value: North
-  - Code: 244
+  - Code: 234
     Known: 1
     Value: West
   - Code: 54

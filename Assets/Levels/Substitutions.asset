@@ -17,5 +17,7 @@ MonoBehaviour:
   - Stop Immediately
   - Friend Starboard
   - Hostile Left
+  - Flee Now
+  - Enemy Right
   TimerValue: 180
   TutorialPrefab: {fileID: 8600201876044129071, guid: b4bebfd19b7ef874fbd23e2459b64475, type: 3}

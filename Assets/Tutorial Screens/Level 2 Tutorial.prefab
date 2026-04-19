@@ -202,9 +202,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'You can spell out words that are not in the code book. To do so, determine
+  m_text: You can spell out words that are not in the code book. To do so, determine
     the number corresponding to the given letter (A=1, B=2 etc.) When finished spelling
-    a word, use the '
+    a word, use the "Spelling End" flag or enter a non-letter code.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

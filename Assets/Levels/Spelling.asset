@@ -17,5 +17,6 @@ MonoBehaviour:
   - Turn Port
   - Turn Starboard
   - Enemy Ahead
-  TimerValue: 180
+  - Ally Astern
+  TimerValue: 120
   TutorialPrefab: {fileID: 8600201876044129071, guid: 10a1e158cb120ba469319f575485c772, type: 3}

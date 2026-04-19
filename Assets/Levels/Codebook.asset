@@ -17,5 +17,7 @@ MonoBehaviour:
   - Go South
   - Go North East
   - Stop
+  - Retreat Now
+  - Enemy East
   TimerValue: 90
   TutorialPrefab: {fileID: 8600201876044129071, guid: 63407a9beed93af4bb580dc72f630e30, type: 3}

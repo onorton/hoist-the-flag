@@ -16,8 +16,9 @@ MonoBehaviour:
   - Hostile 10 Miles Right
   - Friend 20 Miles Port
   - Turn 32 Degrees Starboard
-  - Turn 45 Degrees Port
+  - Turn 45 Degrees Left
   - 1 Enemy Ship
-  - Flee Now
+  - Flee Immediately
+  - Engage Enemy Port 5 Miles East
   TimerValue: 240
   TutorialPrefab: {fileID: 0}

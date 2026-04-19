@@ -16,7 +16,7 @@ public enum SignalType
 {
     Value,
     Finishing,
-    EndOfWord,
+    EndOfCode,
     Numeric,
     EndOfSpelling
 }

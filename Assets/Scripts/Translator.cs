@@ -116,6 +116,8 @@ public class Translator : MonoBehaviour
         var successfulTranslation = true;
         var translatedWords = new List<string>();
 
+        var foundSubstitutions = new List<Translation>();
+
         for (var i = 0; i < targetWords.Length; i++)
         {
             var targetWord = targetWords[i];
@@ -165,9 +167,7 @@ public class Translator : MonoBehaviour
                     {
                         if (!match.Known)
                         {
-                            match.Known = true;
-                            Debug.Log("Found an alias");
-                            PopulateTranslations();
+                            foundSubstitutions.Add(match);
                         }
                     }
                 }
@@ -188,6 +188,12 @@ public class Translator : MonoBehaviour
 
         if (successfulTranslation)
         {
+            foreach (var foundSubstitution in foundSubstitutions)
+            {
+                foundSubstitution.Known = true;
+            }
+            PopulateTranslations();
+
             _audioManager.Play(_correctAudioClip);
             _currentPhraseToTranslateIndex += 1;
             if (_currentPhraseToTranslateIndex == _levels[_levelIndex].StringsToTranslate.Count())
@@ -260,10 +266,10 @@ public class Translator : MonoBehaviour
                 {
                     if (_words.Count < targetWords.Count())
                     {
-                        var match = translation.FirstOrDefault(t => t.Value.ToLower() == targetWords[_words.Count - 1].ToLower());
+                        var match = translation.FirstOrDefault(t => t.Known && t.Value.ToLower() == targetWords[_words.Count - 1].ToLower());
                         if (match == null)
                         {
-                            _currentTranslationTextUi.text += $"{translation.FirstOrDefault(t => t.Known)?.Value ?? _currentWord.Value} ";
+                            _currentTranslationTextUi.text += $"{translation.FirstOrDefault(t => t.Known)?.Value ?? "?"} ";
                         }
                         else
                         {
@@ -272,12 +278,12 @@ public class Translator : MonoBehaviour
                     }
                     else
                     {
-                        _currentTranslationTextUi.text += $"{translation.FirstOrDefault(t => t.Known)?.Value ?? _currentWord.Value} ";
+                        _currentTranslationTextUi.text += $"{translation.FirstOrDefault(t => t.Known)?.Value ?? "?"} ";
                     }
                 }
                 else
                 {
-                    _currentTranslationTextUi.text += $"{_currentWord.Value} ";
+                    _currentTranslationTextUi.text += $"? ";
                 }
             }
         }
@@ -320,7 +326,7 @@ public class Translator : MonoBehaviour
             case SignalType.Finishing:
                 Translate();
                 break;
-            case SignalType.EndOfWord:
+            case SignalType.EndOfCode:
                 FinishWord();
                 break;
             case SignalType.Numeric:
@@ -370,13 +376,24 @@ public class Translator : MonoBehaviour
         for (var i = 0; i < _words.Count; i++)
         {
             var word = _words[i];
-            if (word.Spelt || word.Numeric)
+            if (word.Numeric)
             {
                 _currentTranslationTextUi.text += $"{word.Value} ";
             }
+            else if (word.Spelt)
+            {
+                if (i == _words.Count - 1 && _currentlySpelling)
+                {
+                    _currentTranslationTextUi.text += $"{word.Value}";
+                }
+                else
+                {
+                    _currentTranslationTextUi.text += $"{word.Value} ";
+                }
+
+            }
             else
             {
-
                 // Translate
                 var targetWords = _textToTranslateUi.text.Split(" ");
 
@@ -429,12 +446,12 @@ public class Translator : MonoBehaviour
                 case SignalType.Finishing:
                     button.interactable = _words.Count > 0;
                     break;
-                case SignalType.EndOfWord:
+                case SignalType.EndOfCode:
                 case SignalType.Numeric:
                     button.interactable = _currentWord != null;
                     break;
                 case SignalType.EndOfSpelling:
-                    button.interactable = _words.LastOrDefault()?.Spelt ?? false;
+                    button.interactable = _currentlySpelling;
                     break;
             }
         }
