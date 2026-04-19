@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -78,8 +77,6 @@ public class Translator : MonoBehaviour
     private List<Translation> _translations;
 
     private Dictionary<string, List<Translation>> _translationsDict;
-
-    //TODO Disable special flags where appropriate
 
     private void Start()
     {
@@ -344,7 +341,6 @@ public class Translator : MonoBehaviour
 
     public void UndoLastWord()
     {
-        // TODO: Undo doesn't quite work
         if (_currentWord != null)
         {
             _currentWord = null;
@@ -384,14 +380,14 @@ public class Translator : MonoBehaviour
                 // Translate
                 var targetWords = _textToTranslateUi.text.Split(" ");
 
-                if (_translationsDict.TryGetValue(_currentWord.Value, out var translation))
+                if (_translationsDict.TryGetValue(word.Value, out var translation))
                 {
                     if (_words.Count < targetWords.Count())
                     {
                         var match = translation.FirstOrDefault(t => t.Value.ToLower() == targetWords[_words.Count - 1].ToLower());
                         if (match == null)
                         {
-                            _currentTranslationTextUi.text += $"{translation.FirstOrDefault(t => t.Known)?.Value ?? _currentWord.Value} ";
+                            _currentTranslationTextUi.text += $"{translation.FirstOrDefault(t => t.Known)?.Value ?? word.Value} ";
                         }
                         else
                         {
@@ -400,12 +396,12 @@ public class Translator : MonoBehaviour
                     }
                     else
                     {
-                        _currentTranslationTextUi.text += $"{translation.FirstOrDefault(t => t.Known)?.Value ?? _currentWord.Value} ";
+                        _currentTranslationTextUi.text += $"{translation.FirstOrDefault(t => t.Known)?.Value ?? word.Value} ";
                     }
                 }
                 else
                 {
-                    _currentTranslationTextUi.text += $"{_currentWord.Value} ";
+                    _currentTranslationTextUi.text += $"{word.Value} ";
                 }
             }
         }
@@ -424,10 +420,22 @@ public class Translator : MonoBehaviour
         var flags = GetComponentInChildren<FlagsGrid>().GetFlags();
         foreach (var flag in flags)
         {
-            if (flag.FlagData.SignalType == SignalType.Value)
+            var button = flag.GetComponentInChildren<Button>();
+            switch (flag.FlagData.SignalType)
             {
-                var button = flag.GetComponentInChildren<Button>();
-                button.interactable = _wordLength < _maxWordLength;
+                case SignalType.Value:
+                    button.interactable = _wordLength < _maxWordLength;
+                    break;
+                case SignalType.Finishing:
+                    button.interactable = _words.Count > 0;
+                    break;
+                case SignalType.EndOfWord:
+                case SignalType.Numeric:
+                    button.interactable = _currentWord != null;
+                    break;
+                case SignalType.EndOfSpelling:
+                    button.interactable = _words.LastOrDefault()?.Spelt ?? false;
+                    break;
             }
         }
         _undoButton.gameObject.SetActive(!(_currentWord == null && _words.Count == 0));
