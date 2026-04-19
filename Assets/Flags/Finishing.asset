@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Finishing
   m_EditorClassIdentifier: Assembly-CSharp::FlagData
   Image: {fileID: 2800000, guid: 3bf343273d06d884899d7fe6e4dc13a7, type: 3}
+  Material: {fileID: 2100000, guid: 0d356fefa4c31054c98db6a64ba31d4f, type: 2}
   DisplayValue: Finished
   Value: 
   SignalType: 1

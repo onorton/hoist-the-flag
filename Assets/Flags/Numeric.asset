@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Numeric
   m_EditorClassIdentifier: Assembly-CSharp::FlagData
   Image: {fileID: 2800000, guid: 3c1b06db0586aa749adc4438b01e54cf, type: 3}
+  Material: {fileID: 2100000, guid: 088cdeeb8c8875e48a2d22a01a93d5fc, type: 2}
   DisplayValue: Numeric
   Value: 
   SignalType: 3

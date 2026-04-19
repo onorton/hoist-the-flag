@@ -86,7 +86,7 @@ public class Translator : MonoBehaviour
         _currentTranslationTextUi.text = "";
         _timerText = transform.Find("Corner/Timer").GetComponent<TextMeshProUGUI>();
         _words = new List<Word>();
-        _flagPole = transform.Find("Flag Pole");
+        _flagPole = GameObject.Find("Flag Pole").transform;
 
         var flags = GetComponentInChildren<FlagsGrid>().GetFlags();
         foreach (var flag in flags)
@@ -314,15 +314,19 @@ public class Translator : MonoBehaviour
             if (flagData.SignalType == SignalType.Value)
             {
                 _currentWord = new Word();
-                while (_flagPole.childCount != 0)
-                {
-                    DestroyImmediate(_flagPole.GetChild(0).gameObject);
-                }
+                ResetFlagsOnPole();
             }
         }
 
-        var flagOnPole = Instantiate(_flagOnPolePrefab, _flagPole);
-        flagOnPole.GetComponent<Image>().sprite = Sprite.Create(flagData.Image, new Rect(0, 0, flagData.Image.width, flagData.Image.height), Vector2.zero);
+        foreach (Transform flag in _flagPole)
+        {
+            if (flag.GetComponent<SkinnedMeshRenderer>().enabled == false)
+            {
+                flag.GetComponent<SkinnedMeshRenderer>().material = flagData.Material;
+                flag.GetComponent<SkinnedMeshRenderer>().enabled = true;
+                break;
+            }
+        }
 
         switch (flagData.SignalType)
         {
@@ -430,11 +434,7 @@ public class Translator : MonoBehaviour
             }
         }
 
-        while (_flagPole.childCount != 0)
-        {
-            DestroyImmediate(_flagPole.GetChild(0).gameObject);
-        }
-
+        ResetFlagsOnPole();
     }
 
 
@@ -564,6 +564,7 @@ public class Translator : MonoBehaviour
 
     public void LoadCurrentLevel()
     {
+        ResetFlagsOnPole();
         _timeLeft = _levels[_levelIndex].TimerValue;
         _currentPhraseToTranslateIndex = 0;
         _textToTranslateUi.text = "";
@@ -590,6 +591,14 @@ public class Translator : MonoBehaviour
     {
         _pauseTimer = false;
         LoadText();
+    }
+
+    private void ResetFlagsOnPole()
+    {
+        foreach (Transform flagOnPole in _flagPole)
+        {
+            flagOnPole.GetComponent<SkinnedMeshRenderer>().enabled = false;
+        }
     }
 
     [Serializable]

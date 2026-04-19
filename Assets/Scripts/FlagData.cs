@@ -5,6 +5,8 @@ public class FlagData : ScriptableObject
 {
     public Texture2D Image;
 
+    public Material Material;
+
     public string DisplayValue;
 
     public string Value;
