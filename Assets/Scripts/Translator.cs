@@ -51,33 +51,33 @@ public class Translator : MonoBehaviour
     [SerializeField]
     private AudioClip _flagSelectedAudioClip;
 
-    private List<string> _phrasesToTranslate = new()
-    {
-        "Retreat now",
-        "Go west",
-        "Go east",
-        "Slow immediately",
-        "500"
-    };
+    [SerializeField]
+    private GameObject _nextLevelScreen;
+    [SerializeField]
+    private GameObject _gameOverScreen;
+    [SerializeField]
+    private GameObject _victoryScreen;
+
+    [SerializeField]
+    private List<LevelData> _levels;
+
+    private int _levelIndex = 0;
+
 
     private int _currentPhraseToTranslateIndex;
 
     private bool _currentlySpelling = false;
 
+    private bool _pauseTimer;
 
 
 
-    private Dictionary<string, List<Translation>> _translations = new()
-    {
-        ["78"] = new List<Translation>() { new() { Value = "Retreat", Known = true } },
-        ["74"] = new List<Translation>() { new() { Value = "Go", Known = true } },
-        ["144"] = new List<Translation>() { new() { Value = "North", Known = true } },
-        ["244"] = new List<Translation>() { new() { Value = "West", Known = true } },
-        ["54"] = new List<Translation>() { new() { Value = "East", Known = true } },
-        ["194"] = new List<Translation>() { new() { Value = "South", Known = true } },
-        ["49"] = new List<Translation>() { new() { Value = "Slow", Known = true } },
-        ["40"] = new List<Translation>() { new() { Value = "Now", Known = true }, new() { Value = "Immediately", Known = false } },
-    };
+
+
+    [SerializeField]
+    private List<Translation> _translations;
+
+    private Dictionary<string, List<Translation>> _translationsDict;
 
     //TODO Disable special flags where appropriate
 
@@ -97,8 +97,7 @@ public class Translator : MonoBehaviour
             flag.GetComponentInChildren<Button>().onClick.AddListener(delegate { AddFlag(flag.FlagData); });
         }
 
-        _currentPhraseToTranslateIndex = 0;
-        LoadText();
+        LoadCurrentLevel();
     }
 
     private void Translate()
@@ -156,7 +155,7 @@ public class Translator : MonoBehaviour
             }
             else
             {
-                if (_translations.TryGetValue(enteredWord.Value, out var translation))
+                if (_translationsDict.TryGetValue(enteredWord.Value, out var translation))
                 {
                     var match = translation.FirstOrDefault(t => t.Value.ToLower() == targetWords[i].ToLower());
 
@@ -194,10 +193,19 @@ public class Translator : MonoBehaviour
         {
             _audioManager.Play(_correctAudioClip);
             _currentPhraseToTranslateIndex += 1;
-            if (_currentPhraseToTranslateIndex == _phrasesToTranslate.Count())
+            if (_currentPhraseToTranslateIndex == _levels[_levelIndex].StringsToTranslate.Count())
             {
                 _audioManager.Play(_victoryAudioClip);
-                Debug.Log("You have translated all phrases, congrats");
+                Debug.Log("Completed level");
+                _pauseTimer = true;
+                if (_levelIndex == _levels.Count() - 1)
+                {
+                    _victoryScreen.SetActive(true);
+                }
+                else
+                {
+                    _nextLevelScreen.SetActive(true);
+                }
             }
             else
             {
@@ -251,7 +259,7 @@ public class Translator : MonoBehaviour
             }
             else
             {
-                if (_translations.TryGetValue(_currentWord.Value, out var translation))
+                if (_translationsDict.TryGetValue(_currentWord.Value, out var translation))
                 {
                     if (_words.Count < targetWords.Count())
                     {
@@ -336,7 +344,7 @@ public class Translator : MonoBehaviour
 
     public void UndoLastWord()
     {
-        Debug.Log("Undo Last Word");
+        // TODO: Undo doesn't quite work
         if (_currentWord != null)
         {
             _currentWord = null;
@@ -376,7 +384,7 @@ public class Translator : MonoBehaviour
                 // Translate
                 var targetWords = _textToTranslateUi.text.Split(" ");
 
-                if (_translations.TryGetValue(_currentWord.Value, out var translation))
+                if (_translationsDict.TryGetValue(_currentWord.Value, out var translation))
                 {
                     if (_words.Count < targetWords.Count())
                     {
@@ -422,27 +430,35 @@ public class Translator : MonoBehaviour
                 button.interactable = _wordLength < _maxWordLength;
             }
         }
-        _undoButton.interactable = !(_currentWord == null && _words.Count == 0);
+        _undoButton.gameObject.SetActive(!(_currentWord == null && _words.Count == 0));
 
-        if (_timeLeft == 0.0f)
+        if (_timeLeft == 0.0f || _pauseTimer)
         {
             return;
         }
 
+
         _timeLeft = Math.Max(0.0f, _timeLeft - Time.deltaTime);
-        TimeSpan time = TimeSpan.FromSeconds(_timeLeft);
-        _timerText.text = time.ToString(@"mm\:ss");
+        UpdateDisplayedTimer();
         if (_timeLeft == 0.0f)
         {
             Debug.Log("Ran out of time");
             _audioManager.Play(_gameOverAudioClip);
+            _gameOverScreen.SetActive(true);
         }
+
+    }
+
+    private void UpdateDisplayedTimer()
+    {
+        TimeSpan time = TimeSpan.FromSeconds(_timeLeft);
+        _timerText.text = time.ToString(@"mm\:ss");
 
     }
 
     private void LoadText()
     {
-        _textToTranslateUi.text = _phrasesToTranslate[_currentPhraseToTranslateIndex];
+        _textToTranslateUi.text = _levels[_levelIndex].StringsToTranslate[_currentPhraseToTranslateIndex];
         _currentTranslationTextUi.text = "";
 
     }
@@ -451,10 +467,24 @@ public class Translator : MonoBehaviour
     {
         if (initial)
         {
+            _translationsDict = new Dictionary<string, List<Translation>>();
+
+            foreach (var translation in _translations)
+            {
+                if (!_translationsDict.ContainsKey(translation.Code))
+                {
+                    _translationsDict[translation.Code] = new List<Translation>();
+                }
+
+                _translationsDict[translation.Code].Add(translation);
+
+            }
+
+
             for (var c = 'A'; c <= 'Z'; c++)
             {
                 var number = (c - 'A') + 1;
-                _translations[number.ToString()] = new List<Translation>() { new() { Value = c.ToString(), Known = true } };
+                _translationsDict[number.ToString()] = new List<Translation>() { new() { Value = c.ToString(), Known = true } };
             }
         }
         else
@@ -465,7 +495,7 @@ public class Translator : MonoBehaviour
             }
         }
 
-        foreach (var item in _translations)
+        foreach (var item in _translationsDict)
         {
             var translation = Instantiate(_translationPrefab, _translationContent);
 
@@ -476,9 +506,59 @@ public class Translator : MonoBehaviour
 
     }
 
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
+    public void RestartGame()
+    {
+        _levelIndex = 0;
+
+        LoadCurrentLevel();
+
+        while (_translationContent.childCount != 0)
+        {
+            DestroyImmediate(_translationContent.GetChild(0).gameObject);
+        }
+        PopulateTranslations(true);
+    }
+
+
+    public void LoadCurrentLevel()
+    {
+        _timeLeft = _levels[_levelIndex].TimerValue;
+        _currentPhraseToTranslateIndex = 0;
+        _textToTranslateUi.text = "";
+        _currentTranslationTextUi.text = "";
+        UpdateDisplayedTimer();
+        if (_levels[_levelIndex].TutorialPrefab != null)
+        {
+            Instantiate(_levels[_levelIndex].TutorialPrefab, transform.Find("Menu Screens"));
+            _pauseTimer = true;
+        }
+        else
+        {
+            StartLevel();
+        }
+    }
+
+    public void LoadNextLevel()
+    {
+        _levelIndex += 1;
+        LoadCurrentLevel();
+    }
+
+    public void StartLevel()
+    {
+        _pauseTimer = false;
+        LoadText();
+    }
+
     [Serializable]
     public class Translation
     {
+        public string Code;
         public bool Known;
         public string Value;
     }
@@ -487,7 +567,6 @@ public class Translator : MonoBehaviour
     {
         public string Value;
         public bool Numeric;
-        // TODO overloading Letters and Words 
         public bool Spelt;
 
         public bool IsLetter => Value != "" && int.Parse(Value) >= 1 && int.Parse(Value) <= 26 && !Numeric && !Spelt;

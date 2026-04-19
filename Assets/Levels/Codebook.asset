@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a62fe884384a94442a002797d01fb656, type: 3}
+  m_Name: Codebook
+  m_EditorClassIdentifier: Assembly-CSharp::LevelData
+  StringsToTranslate:
+  - Go West
+  - Go South
+  - Go North East
+  - Stop
+  TimerValue: 90
+  TutorialPrefab: {fileID: 8600201876044129071, guid: 63407a9beed93af4bb580dc72f630e30, type: 3}
