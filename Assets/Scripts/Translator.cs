@@ -110,6 +110,7 @@ public class Translator : MonoBehaviour
             Debug.Log("Failed to translate as number of words is not the same");
             _words.Clear();
             _currentTranslationTextUi.color = Color.red;
+            _audioManager.Play(_errorAudioClip);
             return;
         }
 
@@ -245,6 +246,12 @@ public class Translator : MonoBehaviour
             }
             else
             {
+                // Spelling interrupted 
+                if (_currentlySpelling)
+                {
+                    _currentTranslationTextUi.text += " ";
+                }
+
                 _currentlySpelling = false;
                 _words.Add(_currentWord);
             }
@@ -295,7 +302,7 @@ public class Translator : MonoBehaviour
     private void AddFlag(FlagData flagData)
     {
         _currentTranslationTextUi.color = Color.white;
-        _audioManager.Play(_flagSelectedAudioClip);
+        _audioManager.Play(_flagSelectedAudioClip, priority: 100);
 
         if (_currentWord == null)
         {
@@ -438,6 +445,12 @@ public class Translator : MonoBehaviour
         foreach (var flag in flags)
         {
             var button = flag.GetComponentInChildren<Button>();
+            if (_pauseTimer)
+            {
+                button.interactable = false;
+                continue;
+            }
+
             switch (flag.FlagData.SignalType)
             {
                 case SignalType.Value:
@@ -524,9 +537,8 @@ public class Translator : MonoBehaviour
         {
             var translation = Instantiate(_translationPrefab, _translationContent);
 
-            var translationText = string.Join("/\n", item.Value.Where(t => t.Known).Select(t => t.Value));
-            translation.GetComponent<TextMeshProUGUI>().text = $"{item.Key} = {translationText}";
-
+            translation.GetComponent<TranslationText>().Key = item.Key;
+            translation.GetComponent<TranslationText>().KnownValues = item.Value.Where(t => t.Known).Select(t => t.Value).ToList();
         }
 
     }

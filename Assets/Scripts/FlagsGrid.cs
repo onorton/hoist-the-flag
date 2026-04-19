@@ -24,6 +24,8 @@ public class FlagsGrid : MonoBehaviour
         var files = Directory.GetFiles("Assets/Flags", "*.asset", SearchOption.TopDirectoryOnly);
 
 
+#if UNITY_EDITOR
+
         foreach (var file in files)
         {
             var flagData = (FlagData)AssetDatabase.LoadAssetAtPath(file, typeof(FlagData));
@@ -32,6 +34,7 @@ public class FlagsGrid : MonoBehaviour
             flag.GetComponent<Flag>().FlagData = flagData;
             flag.GetComponent<Flag>().InitialiseFromData();
         }
+#endif
     }
 
     public List<Flag> GetFlags()

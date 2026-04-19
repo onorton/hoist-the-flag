@@ -178,7 +178,7 @@ MonoBehaviour:
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -2589,7 +2589,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.8679245, g: 0.755495, b: 0.10234957, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5852,7 +5852,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6627451, g: 0.5568628, b: 0.14901961, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7954,7 +7954,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -10142,7 +10142,7 @@ MonoBehaviour:
   _undoButton: {fileID: 130727597}
   _translationContent: {fileID: 12313783}
   _flagOnPolePrefab: {fileID: 1763239250273589153, guid: 20d1c105bfb1ff1429b9bd7d32b63be2, type: 3}
-  _translationPrefab: {fileID: 2107835155879218499, guid: 6b7107396caa54b43acf4f61ecb2998b, type: 3}
+  _translationPrefab: {fileID: 6772761963007429134, guid: 520e69da9fcbcc24690a700311e289d0, type: 3}
   _audioManager: {fileID: 1608020711}
   _victoryAudioClip: {fileID: 8300000, guid: 3e3794438b9de66498385d73ca3d47e6, type: 3}
   _gameOverAudioClip: {fileID: 8300000, guid: edaf1adf5eb8188459aa78b6489e5771, type: 3}
@@ -12206,7 +12206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 0.627451, g: 0.5176471, b: 0.21568629, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
