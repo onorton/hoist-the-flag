@@ -12216,6 +12216,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 74b5508a6e308f64ab8b6d7ee30429c8, type: 2}
   - {fileID: 11400000, guid: 8dd3fb9cc50dc75469fa9e1838b4098c, type: 2}
   _translations:
+  - Code: 144
+    Known: 1
+    Value: North
+  - Code: 54
+    Known: 1
+    Value: East
+  - Code: 194
+    Known: 1
+    Value: South
+  - Code: 234
+    Known: 1
+    Value: West
   - Code: 78
     Known: 1
     Value: Retreat
@@ -12234,18 +12246,6 @@ MonoBehaviour:
   - Code: 74
     Known: 1
     Value: Go
-  - Code: 144
-    Known: 1
-    Value: North
-  - Code: 234
-    Known: 1
-    Value: West
-  - Code: 54
-    Known: 1
-    Value: East
-  - Code: 194
-    Known: 1
-    Value: South
   - Code: 49
     Known: 1
     Value: Slow
