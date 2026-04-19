@@ -551,20 +551,19 @@ public class Translator : MonoBehaviour
 
             }
 
-
             for (var c = 'A'; c <= 'Z'; c++)
             {
                 var number = (c - 'A') + 1;
                 _translationsDict[number.ToString()] = new List<Translation>() { new() { Value = c.ToString(), Known = true } };
             }
         }
-        else
+
+        foreach (Transform child in _translationContent)
         {
-            while (_translationContent.childCount != 0)
-            {
-                DestroyImmediate(_translationContent.GetChild(0).gameObject);
-            }
+            Destroy(child.gameObject);
         }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_translationContent as RectTransform);
 
         foreach (var item in _translationsDict)
         {
